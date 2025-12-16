@@ -1,58 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>検定合格情報デモ（リセット機能付き）</title>
+</head>
 <body>
-  <link href="scsstest.css" rel="stylesheet" type="text/css" media="all">
-  <script src="scsstest.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-  <div class="wrapper-no7">
-    <div class="logo">LOGO</div>
-    <div class="animation-wrapper">
-      <div class="cat-wrapper">
-        <svg class="cat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 207.68 163.77" preserveAspectRatio="none">
-          <title>cat</title>
-          <g class="body">
-            <circle class="body-backcircle" cx="76.86" cy="83.31" r="45.5" />
-            <circle class="body-frontcircle" cx="150.86" cy="83.31" r="45.5" />
-            <rect class="body-between" x="74.65" y="37.89" width="83.04" height="90.61" />
-          </g>
-          <circle class="head" cx="161.76" cy="52.75" r="45.92" />
-          <g class="eyes">
-            <circle class="eyes-l" cx="153.51" cy="46.5" r="8.25" />
-            <circle class="eyes-r" cx="185.76" cy="46.5" r="8.25" />
-          </g>
-          <g class="ears">
-            <polygon class="ears-l" points="132.76 19 132.76 0 149.55 8.81 132.76 19" />
-            <polygon class="ears-r" points="179.44 11.2 197 4.06 195.16 22.9 179.44 11.2" />
-          </g>
-          <rect class="tail" x="-11" y="32.87" width="107" height="20" rx="9.58" ry="9.58"
-            transform="translate(41.19 -18.41) rotate(45)" />
-          <g class="backlegs">
-            <path class="backlegs1"
-              d="M74,124.85a6,6,0,0,0-4.7-7.07l-4.41-.89a6,6,0,0,0-7.07,4.7l-6.31,31.35a8.25,8.25,0,1,0,15.64,5,5.94,5.94,0,0,0,.44-1.33Z"
-              transform="translate(-1.58 -0.92)" />
-            <path class="backlegs2"
-              d="M88.22,125.86a6,6,0,0,0-4.38-7.27l-4.37-1.08a6,6,0,0,0-7.27,4.38l-7.69,31a8.25,8.25,0,1,0,15.41,5.72,5.94,5.94,0,0,0,.5-1.31Z"
-              transform="translate(-1.58 -0.92)" />
-          </g>
-          <g class="frontlegs">
-            <path class="frontlegs1"
-              d="M162.89,120.91a6,6,0,0,0-7.65-3.68L151,118.72a6,6,0,0,0-3.68,7.65l10.57,30.18a8.25,8.25,0,1,0,16-3.65,5.94,5.94,0,0,0-.3-1.37Z"
-              transform="translate(-1.58 -0.92)" />
-            <path class="frontlegs2"
-              d="M175.77,120.08a6,6,0,0,0-7.48-4l-4.31,1.3a6,6,0,0,0-4,7.48l9.22,30.62a8.25,8.25,0,1,0,16.17-2.94,5.94,5.94,0,0,0-.24-1.38Z"
-              transform="translate(-1.58 -0.92)" />
-          </g>
-        </svg>
-      </div>
-      <div class="logoani">
-        <img src="logo2.png" alt="logo">
-      </div>
-    </div>
-    <div class="layout notvisible">
-      <div class="layout__nav">
-      </div>
-      <div class="layout__title"></div>
-      <div class="layout__content">
-      </div>
-    </div>
-    <button class="restart">restart animation</button>
-  </div>
+
+    <h1>ウェブサイト検定</h1>
+    
+    <div id="result-area">
+        </div>
+
+    <button id="pass-button">検定に合格する</button>
+    <button id="reset-button" style="display:none;">合格情報を取り消す (リセット)</button>
+
+    <script>
+        // --- 1. 定数とDOM要素の定義 ---
+        const STORAGE_KEY = 'isExamPassed'; 
+        const resultArea = document.getElementById('result-area');
+        const passButton = document.getElementById('pass-button');
+        const resetButton = document.getElementById('reset-button'); // リセットボタンの要素を取得
+
+        // --- 2. ページ読み込み時の処理 (情報の「再取得・表示」) ---
+        function displayResult() {
+            const savedValue = localStorage.getItem(STORAGE_KEY);
+
+            if (savedValue === 'true') {
+                // 合格している場合
+                resultArea.innerHTML = '<h2>🎉 合格！ 🎉</h2>';
+                passButton.style.display = 'none'; // 合格ボタンを非表示
+                resetButton.style.display = 'inline'; // リセットボタンを表示
+            } else {
+                // 合格していない場合
+                resultArea.innerHTML = '<h2>まだ合格していません</h2>';
+                passButton.style.display = 'inline'; // 合格ボタンを表示
+                resetButton.style.display = 'none'; // リセットボタンを非表示
+            }
+        }
+
+        // --- 3. 合格ボタンクリック時の処理 (情報の「保存」) ---
+        passButton.addEventListener('click', () => {
+            // Local Storageに合格情報（'true'）を保存
+            localStorage.setItem(STORAGE_KEY, 'true');
+            
+            // 画面表示を更新
+            displayResult();
+            
+            alert('合格情報をブラウザに保存しました！');
+        });
+
+        // --- 4. リセットボタンクリック時の処理 (情報の「削除」) ---
+        resetButton.addEventListener('click', () => {
+            // Local Storageから指定したキー（isExamPassed）のデータだけを削除する
+            // *これが合格情報を消去する処理です*
+            localStorage.removeItem(STORAGE_KEY); 
+            
+            // 画面表示を更新 (これにより「まだ合格していません」に戻る)
+            displayResult();
+            
+            alert('合格情報が取り消されました！ページを更新しても情報が消えていることを確認してください。');
+        });
+
+        // ページが読み込まれたら、まず結果を表示する
+        displayResult();
+
+    </script>
 </body>
+</html>
